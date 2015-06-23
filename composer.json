@@ -1,0 +1,18 @@
+{
+    "autoload": {
+        "psr-4": {
+            "Tt\\": "src"
+        }
+    },
+    "require": {
+        "vtk13/lib-sql": "dev-master",
+        "vtk13/mvc": "dev-master",
+        "robmorgan/phinx": "*",
+        "components/jquery": "2.0.*",
+        "components/bootstrap": "3.*"
+    },
+    "config": {
+        "component-baseurl": "/assets",
+        "component-dir": "assets"
+    }
+}
