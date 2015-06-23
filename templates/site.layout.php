@@ -20,6 +20,7 @@
 </head>
 <body>
 <div class="container">
+<?php if (!empty($currentUser)) { ?>
 <div class="row">
     <div class="col-xs-12">
         <!-- Static navbar -->
@@ -36,22 +37,24 @@
                 </div>
                 <div id="navbar" class="navbar-collapse collapse">
                     <ul class="nav navbar-nav">
-                        <li><a href="/">Workspace</a></li>
+                        <li><a href="/track/">Workspace</a></li>
                         <li class="dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Admin <span class="caret"></span></a>
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Manage <span class="caret"></span></a>
                             <ul class="dropdown-menu">
+                                <li><a href="/task/">Tasks</a></li>
                                 <li><a href="/activity/">Types of Activity</a></li>
                             </ul>
                         </li>
                     </ul>
                     <ul class="nav navbar-nav navbar-right">
-                        <li><a href="../navbar-fixed-top/">Logout</a></li>
+                        <li><a href="/auth/logout">Logout</a></li>
                     </ul>
                 </div><!--/.nav-collapse -->
             </div><!--/.container-fluid -->
         </nav>
     </div>
 </div>
+<?php } ?>
 
 <?php echo $content; ?>
 </div>

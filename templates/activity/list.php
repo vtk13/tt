@@ -12,6 +12,7 @@
                         <button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-edit"></span></button>
                     </form>
                     <div><?php echo $activity['title']; ?></div>
+                    <div><?php echo gmdate("H:i:s", $activity['spent']) ?></div>
                 </li>
             <?php } ?>
             <li class="list-group-item">

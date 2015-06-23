@@ -1,14 +1,15 @@
 <?php
-use Vtk13\LibSql\Mysql\Mysql;
-
 require_once 'vendor/autoload.php';
 
-$db = new Mysql('localhost', 'root', '', 'tt');
+session_start();
 
-$router = new \Vtk13\Mvc\Handlers\ControllerRouter('Tt\\Controller\\', '/', 'track');
+$router = new \Vtk13\Mvc\Handlers\ControllerRouter('Tt\\Controller\\', '/', 'index');
 $response = $router->handle(\Vtk13\Mvc\Http\Request::createFromGlobals());
-header($response->getStatusLine());
-foreach ($response->getHeaders() as $name => $value) {
-    header("{$name}: {$value}");
+
+if (!headers_sent()) {
+    header($response->getStatusLine());
+    foreach ($response->getHeaders() as $name => $value) {
+        header("{$name}: {$value}");
+    }
+    echo $response->getBody();
 }
-echo $response->getBody();

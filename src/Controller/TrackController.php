@@ -1,23 +1,15 @@
 <?php
 namespace Tt\Controller;
 
-use Vtk13\LibSql\IDatabase;
-use Vtk13\LibSql\Mysql\Mysql;
-use Vtk13\Mvc\Handlers\AbstractController;
+use Tt\AuthenticatedController;
 use Vtk13\Mvc\Http\RedirectResponse;
 
-class TrackController extends AbstractController
+class TrackController extends AuthenticatedController
 {
-    /**
-     * @var IDatabase
-     */
-    protected $db;
 
     public function __construct()
     {
         parent::__construct('track');
-
-        $this->db = $GLOBALS['db'];
     }
 
     public function actionResultToResponse($result, $templatePath, $action)
@@ -35,6 +27,7 @@ class TrackController extends AbstractController
                 'SELECT a.*, sum(IF(time_end=0, UNIX_TIMESTAMP(), time_end) - time_start) as spent
                    FROM task a
                         LEFT JOIN activity_log b ON a.id=b.task_id
+                  WHERE a.user_id=' . $this->currentUser['id'] . '
                GROUP BY a.id'
             );
 
@@ -44,6 +37,7 @@ class TrackController extends AbstractController
                     "SELECT a.*, {$taskId} as task_id, sum(IF(time_end=0, UNIX_TIMESTAMP(), time_end) - time_start) as spent
                        FROM activity a
                             LEFT JOIN activity_log b ON b.task_id={$taskId} AND a.id=b.activity_id
+                      WHERE a.user_id={$this->currentUser['id']}
                    GROUP BY a.id"
                 );
             } else {
@@ -65,9 +59,24 @@ class TrackController extends AbstractController
         ];
     }
 
+    /**
+     * Get active record for current user
+     *
+     * In fact there must be only one active record, but in case of any bugs you should handle all such records
+     *
+     * @return array
+     */
+    private function getActiveRecords()
+    {
+        return $this->db->select('SELECT * FROM activity_log WHERE ' . $this->db->where([
+            'user_id'   => $this->currentUser['id'],
+            'time_end'  => 0,
+        ]));
+    }
+
     public function startPOST($task, $activity)
     {
-        foreach ($this->db->select('SELECT * FROM activity_log WHERE time_end=0') as $row) {
+        foreach ($this->getActiveRecords() as $row) {
             $row['time_end'] = time();
             $this->db->update('activity_log', $row, "id={$row['id']}");
         }
@@ -79,6 +88,7 @@ class TrackController extends AbstractController
                 'activity_id'   => $activity,
                 'time_start'    => time(),
                 'time_end'      => 0,
+                'user_id'       => $this->currentUser['id'],
             ]
         );
 
@@ -87,24 +97,11 @@ class TrackController extends AbstractController
 
     public function stopPOST()
     {
-        foreach ($this->db->select('SELECT * FROM activity_log WHERE time_end=0') as $row) {
+        foreach ($this->getActiveRecords() as $row) {
             $row['time_end'] = time();
             $this->db->update('activity_log', $row, "id={$row['id']}");
         }
 
-        return new RedirectResponse($_SERVER['HTTP_REFERER']);
-    }
-
-    public function addTaskPOST()
-    {
-        $this->db->insert(
-            'task',
-            [
-                'title'         => $_POST['title'],
-                'description'   => $_POST['description'],
-                'url'           => $_POST['url'],
-            ]
-        );
         return new RedirectResponse($_SERVER['HTTP_REFERER']);
     }
 

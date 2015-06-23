@@ -4,38 +4,38 @@ namespace Tt\Controller;
 use Tt\AuthenticatedController;
 use Vtk13\Mvc\Http\RedirectResponse;
 
-class ActivityController extends AuthenticatedController
+class TaskController extends AuthenticatedController
 {
     protected $defaultAction = 'list';
 
     public function __construct()
     {
-        parent::__construct('activity');
+        parent::__construct('task');
     }
 
     public function listGET()
     {
-        $activities = $this->db->select(
+        $tasks = $this->db->select(
             'SELECT a.*, sum(IF(time_end=0, UNIX_TIMESTAMP(), time_end) - time_start) as spent
-               FROM activity a
-                    LEFT JOIN activity_log b ON a.id=b.activity_id
-              WHERE a.user_id=' . $this->currentUser['id'] . '
-           GROUP BY a.id'
+                   FROM task a
+                        LEFT JOIN activity_log b ON a.id=b.task_id
+                  WHERE a.user_id=' . $this->currentUser['id'] . '
+               GROUP BY a.id'
         );
         return [
-            'activities' => $activities,
+            'tasks' => $tasks,
         ];
     }
 
     public function removePOST($id)
     {
-        $this->db->delete('activity', $this->db->where([
+        $this->db->delete('task', $this->db->where([
             'user_id'   => $this->currentUser['id'],
             'id'        => $id,
         ]));
         $this->db->delete('activity_log', $this->db->where([
-            'user_id'       => $this->currentUser['id'],
-            'activity_id'   => $id,
+            'user_id'   => $this->currentUser['id'],
+            'task_id'   => $id,
         ]));
 
         return new RedirectResponse($_SERVER['HTTP_REFERER']);
@@ -43,7 +43,7 @@ class ActivityController extends AuthenticatedController
 
     public function editGET($id)
     {
-        return $this->db->selectRow('SELECT * FROM activity WHERE ' . $this->db->where([
+        return $this->db->selectRow('SELECT * FROM task WHERE ' . $this->db->where([
             'user_id'   => $this->currentUser['id'],
             'id'        => $id,
         ]));
@@ -53,16 +53,18 @@ class ActivityController extends AuthenticatedController
     {
         $id = isset($_POST['id']) ? (int)$_POST['id'] : 0;
         $data = [
-            'title'     => $_POST['title'],
-            'user_id'   => $this->currentUser['id'],
+            'title'         => $_POST['title'],
+            'description'   => $_POST['description'],
+            'url'           => $_POST['url'],
+            'user_id'       => $this->currentUser['id'],
         ];
         if ($id) {
-            $this->db->update('activity', $data, $this->db->where([
+            $this->db->update('task', $data, $this->db->where([
                 'user_id'   => $this->currentUser['id'],
                 'id'        => $id,
             ]));
         } else {
-            $this->db->insert('activity', $data);
+            $this->db->insert('task', $data);
         }
 
         return new RedirectResponse($_SERVER['HTTP_REFERER']);

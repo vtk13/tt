@@ -10,7 +10,7 @@
                     <form action="/track/task/<?php echo $task['id']; ?>" method="get" class="pull-right">
                         <button type="submit" class="btn btn-success"><span class="glyphicon <?php echo $selected ? 'glyphicon-arrow-right' : 'glyphicon-minus' ?>"></span></button>
                     </form>
-                    <form action="/track/remove-task/<?php echo $task['id']; ?>" method="post" class="pull-right" onclick="return confirm('Really remove Task?');">
+                    <form action="/task/remove/<?php echo $task['id']; ?>" method="post" class="pull-right" onclick="return confirm('Really remove Task?');">
                         <button title="Remove task and all activity logs" type="submit" class="btn btn-danger"><span class="glyphicon glyphicon-remove"></span></button>
                     </form>
                     <?php if ($current) { ?>
@@ -23,7 +23,7 @@
                 </li>
             <?php } ?>
             <li class="list-group-item">
-                <form action="/track/add-task" method="post">
+                <form action="/task/edit" method="post">
                     <div class="form-group">
                         <input class="form-control" name="title" placeholder="Title" required>
                     </div>

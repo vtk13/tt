@@ -9,6 +9,7 @@
         "vtk13/mvc": "dev-master",
         "robmorgan/phinx": "*",
         "components/jquery": "2.0.*",
+        "guzzlehttp/guzzle": "6.*",
         "components/bootstrap": "3.*"
     },
     "config": {
