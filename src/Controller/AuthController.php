@@ -85,7 +85,9 @@ class AuthController extends BaseController
                     $userId = $this->db->insertId();
                 }
                 $_SESSION['userId'] = $userId;
-                return new RedirectResponse('/track/');
+                $redirect = isset($_SESSION['login-redirect']) ? $_SESSION['login-redirect'] : '/track/';
+                unset($_SESSION['login-redirect']);
+                return new RedirectResponse($redirect);
             }
         }
 

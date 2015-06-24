@@ -1,6 +1,7 @@
 <?php
 namespace Tt;
 
+use Vtk13\Mvc\Http\RedirectResponse;
 use Vtk13\Mvc\Http\Response;
 
 class AuthenticatedController extends BaseController
@@ -13,7 +14,8 @@ class AuthenticatedController extends BaseController
             $this->currentUser = $this->db->selectRow('SELECT * FROM user WHERE id=' . (int)$_SESSION['userId']);
             return null;
         } else {
-            return new Response('Access Denied', 403);
+            $_SESSION['login-redirect'] = $_SERVER['REQUEST_URI'];
+            return new RedirectResponse('/auth/google-login');
         }
     }
 
