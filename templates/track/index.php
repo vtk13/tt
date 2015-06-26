@@ -7,10 +7,10 @@
                 $selected = $task['id'] == $selectedTask;
                 ?>
                 <li class="list-group-item <?php echo $current ? 'bg-success' : '';  ?>">
-                    <form action="/track/task/<?php echo $task['id']; ?>" method="get" class="pull-right">
+                    <form action="/track/task/<?php echo h($task['id']); ?>" method="get" class="pull-right">
                         <button type="submit" class="btn btn-success"><span class="glyphicon <?php echo $selected ? 'glyphicon-arrow-right' : 'glyphicon-minus' ?>"></span></button>
                     </form>
-                    <form action="/task/remove/<?php echo $task['id']; ?>" method="post" class="pull-right" onclick="return confirm('Really remove Task?');">
+                    <form action="/task/remove/<?php echo h($task['id']); ?>" method="post" class="pull-right" onclick="return confirm('Really remove Task?');">
                         <button title="Remove task and all activity logs" type="submit" class="btn btn-danger"><span class="glyphicon glyphicon-remove"></span></button>
                     </form>
                     <?php if ($current) { ?>
@@ -18,7 +18,7 @@
                             <button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-stop"></span></button>
                         </form>
                     <?php } ?>
-                    <div><a href="<?php echo $task['url']; ?>"><?php echo $task['title']; ?></a> <?php echo $task['description']; ?></div>
+                    <div><a href="<?php echo $task['url']; ?>"><?php echo h($task['title']); ?></a> <?php echo h($task['description']); ?></div>
                     <div><?php echo gmdate("H:i:s", $task['spent']) ?></div>
                 </li>
             <?php } ?>
@@ -57,7 +57,7 @@
                                 <button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-play"></span></button>
                             </form>
                         <?php } ?>
-                        <div><?php echo $activity['title']; ?></div>
+                        <div><?php echo h($activity['title']); ?></div>
                         <div><?php echo gmdate("H:i:s", $activity['spent']) ?></div>
                     </li>
                 <?php } ?>

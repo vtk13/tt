@@ -17,5 +17,6 @@ class BaseController extends AbstractController
         parent::__construct($name);
 
         $this->db = new Mysql('localhost', 'root', '', 'tt');
+        $this->db->query('SET NAMES utf8');
     }
 }

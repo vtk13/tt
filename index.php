@@ -3,6 +3,11 @@ require_once 'vendor/autoload.php';
 
 session_start();
 
+function h($value)
+{
+    return htmlspecialchars($value);
+}
+
 $router = new \Vtk13\Mvc\Handlers\ControllerRouter('Tt\\Controller\\', '/', 'index');
 $response = $router->handle(\Vtk13\Mvc\Http\Request::createFromGlobals());
 

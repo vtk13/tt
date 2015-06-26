@@ -23,21 +23,23 @@ class TrackController extends AuthenticatedController
                 ];
             }
 
+            $today = empty($result['onlyToday']) ? '' : ' AND time_start>UNIX_TIMESTAMP(DATE_FORMAT(NOW(), "%Y-%m-%d 00:00:00"))';
+
             $result['tasks'] = $this->db->select(
-                'SELECT a.*, sum(IF(time_end=0, UNIX_TIMESTAMP(), time_end) - time_start) as spent
+                "SELECT a.*, SUM(IF(time_end=0, UNIX_TIMESTAMP(), time_end) - time_start) AS spent
                    FROM task a
                         LEFT JOIN activity_log b ON a.id=b.task_id
-                  WHERE a.user_id=' . $this->currentUser['id'] . '
-               GROUP BY a.id'
+                  WHERE a.user_id={$this->currentUser['id']} {$today}
+               GROUP BY a.id"
             );
 
             if (isset($result['selectedTask'])) {
                 $taskId = (int)$result['selectedTask'];
                 $result['activities'] = $this->db->select(
-                    "SELECT a.*, {$taskId} as task_id, sum(IF(time_end=0, UNIX_TIMESTAMP(), time_end) - time_start) as spent
+                    "SELECT a.*, {$taskId} as task_id, SUM(IF(time_end=0, UNIX_TIMESTAMP(), time_end) - time_start) AS spent
                        FROM activity a
                             LEFT JOIN activity_log b ON b.task_id={$taskId} AND a.id=b.activity_id
-                      WHERE a.user_id={$this->currentUser['id']}
+                      WHERE a.user_id={$this->currentUser['id']} {$today}
                    GROUP BY a.id"
                 );
             } else {
@@ -48,8 +50,11 @@ class TrackController extends AuthenticatedController
         return parent::actionResultToResponse($result, $templatePath, $action);
     }
 
-    public function indexGET()
+    public function indexGET($today = 0)
     {
+        return [
+            'onlyToday' => (bool)$today,
+        ];
     }
 
     public function taskGET($id)
